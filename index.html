@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mabasem – Reception Control Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#2c5c9e;--ink:#1f2937;--mut:#6b7280;--line:#d9dde3;--green:#3a8f5a;--amber:#c98a2b;--red:#b5443f;--gray:#6b7280;--bg:#f6f7f9}
+*{box-sizing:border-box}
+body{margin:0;font-family:Lato,system-ui,sans-serif;color:var(--ink);background:#e9ecf1;font-size:14px}
+.app{max-width:1404px;margin:12px auto;background:#fff;border:1px solid var(--line);min-height:960px;display:flex;flex-direction:column}
+header{background:var(--blue);color:#fff;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-size:15px}
+header h1{font-size:21px;margin:0;font-weight:700}
+header span.sep{opacity:.7;margin:0 8px}
+.body{display:flex;flex:1}
+nav{width:172px;border-right:1px solid var(--line);padding:18px 8px;flex-shrink:0}
+nav a{display:block;padding:10px 17px;margin-bottom:10px;border-radius:2px;cursor:pointer;color:var(--ink);text-decoration:none}
+nav a:hover{background:#eef2f8}
+nav a.on{background:#e3e9f4;color:var(--blue);font-weight:700}
+main{flex:1;padding:10px 18px 24px;min-width:0}
+.banner{background:#fff3d6;border:1px solid #e4c777;text-align:center;padding:7px;font-weight:700;color:#5a4300;font-size:13.5px}
+.filters{display:flex;gap:12px;align-items:center;margin:16px 0;flex-wrap:wrap}
+.filters select,.box{height:42px;border:1px solid var(--line);background:#fff;padding:0 10px;font:inherit;border-radius:2px;display:flex;align-items:center;color:var(--ink)}
+.btn{background:var(--blue);color:#fff;border:0;height:43px;padding:0 18px;font:inherit;font-weight:700;border-radius:3px;cursor:pointer;margin-left:auto}
+.btn:hover{filter:brightness(1.1)}
+.btn.o{background:#fff;color:var(--blue);border:1px solid var(--blue);height:32px;padding:0 14px;margin:0}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.kpi{border:1px solid var(--line);border-left:5px solid var(--blue);padding:10px 16px 8px;cursor:pointer;background:#fff}
+.kpi:hover{box-shadow:0 2px 8px #0002}
+.kpi small{display:block;color:var(--mut);font-size:14px}
+.kpi b{font-size:40px;line-height:1.15}
+.grid{display:grid;gap:16px;margin-top:20px}
+.g1{grid-template-columns:1.36fr 1fr 1fr}
+.g2{grid-template-columns:2.38fr 1fr}
+.card{border:1px solid var(--line);padding:12px 16px;background:#fff;min-width:0}
+.card h3{margin:0 0 12px;font-size:16.5px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;color:var(--mut);font-weight:400;font-size:13px;padding:6px 6px}
+td{padding:8px 6px}
+tbody tr:nth-child(odd){background:#f3f5f9}
+.pill{display:inline-block;min-width:76px;text-align:center;padding:2px 8px;border-radius:14px;border:1.5px solid;font-size:12.5px;font-weight:700}
+.p-Approved{color:var(--green);background:#e3f1e8;border-color:var(--green)}
+.p-Pending{color:var(--amber);background:#fff3d9;border-color:var(--amber)}
+.p-Rejected{color:var(--red);background:#fbe4e2;border-color:var(--red)}
+.p-NA{color:var(--gray);background:#f2f3f5;border-color:var(--gray)}
+.p-Manual{color:var(--blue);background:#e2eaf6;border-color:var(--blue)}
+a.l{color:var(--blue);font-weight:700;cursor:pointer;text-decoration:none}
+a.l:hover{text-decoration:underline}
+.cap{display:grid;grid-template-columns:150px 1fr 48px;gap:10px;align-items:center;margin:11px 0;font-size:14px}
+.bar{background:#eef0f3;height:18px;position:relative}.bar i{display:block;height:100%}
+.note{font-size:12px;color:var(--mut);margin-top:8px}
+.donutwrap{display:flex;align-items:center;gap:20px;margin-top:8px}
+.leg div{margin:14px 0;display:flex;align-items:center;gap:10px}.leg i{width:16px;height:16px;display:inline-block}
+.act{display:flex;gap:12px;margin-bottom:14px}.act .d{width:12px;height:12px;border-radius:50%;margin-top:5px;flex-shrink:0}
+.act b{display:block}.act small{color:var(--mut);font-size:13px}
+.dl-b{color:#2563b0;font-weight:700}.dl-a{color:var(--amber);font-weight:700}.dl-r{color:var(--red);font-weight:700}.dl-g{color:var(--green);font-weight:700}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:11px 20px;border-radius:6px;opacity:0;transition:.25s;pointer-events:none;z-index:30}
+.toast.show{opacity:1}
+.ov{position:fixed;inset:0;background:#0006;display:flex;align-items:center;justify-content:center;z-index:20}
+.modal{background:#fff;width:min(480px,92vw);padding:22px;border-radius:6px;max-height:90vh;overflow:auto}
+.modal h3{margin:0 0 14px;font-size:19px}
+.modal label{display:block;font-size:12.5px;color:var(--mut);font-weight:700;margin-top:12px}
+.modal input,.modal select{width:100%;height:40px;border:1px solid var(--line);padding:0 10px;font:inherit;border-radius:3px;margin-top:4px}
+.modal .row{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+.modal .btn{margin:0}
+.btn.g{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.pg h2{margin:6px 0 2px;font-size:22px}.pg p{margin:0 0 14px;color:var(--mut)}
+.stat4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.cols{display:flex;align-items:flex-end;gap:14px;height:230px;padding:10px 10px 0}
+.cols div{flex:1;text-align:center;font-size:12px;color:var(--mut)}.cols div i{display:block;background:var(--blue);margin:3px auto;width:70%;border-radius:2px 2px 0 0}
+@media(max-width:1000px){.kpis{grid-template-columns:repeat(2,1fr)}.g1,.g2{grid-template-columns:1fr}.body{flex-direction:column}nav{width:auto;display:flex;flex-wrap:wrap;border:0;border-bottom:1px solid var(--line)}nav a{margin:2px}.card{overflow-x:auto}header{height:auto;padding:12px;flex-wrap:wrap;gap:6px}.stat4{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1>Mabasem <span class="sep">|</span> Reception Control Dashboard</h1><div>Reception user <span class="sep">·</span> Role: Front desk <span class="sep">·</span> <a class="l" style="color:#fff;font-weight:400" onclick="toast('Prototype: log out disabled')">Log out</a></div></header>
+<div class="body">
+<nav id="nav"></nav>
+<main>
+<div class="banner">Illustrative Prototype Data — Not Actual Operational Data &nbsp;·&nbsp; Insurance responses come from a simulated NPHIES-style service</div>
+<div class="filters">
+<div class="box" style="width:163px">Date: 12 Nov 2026</div>
+<select id="fClinic"></select><select id="fPhys"></select><select id="fAppt"></select><select id="fIns"></select>
+<button class="btn" onclick="openBooking()">+ New booking</button>
+</div>
+<div id="view"></div>
+</main></div></div>
+<div class="toast" id="toast"></div>
+<script>
+const CL=['Internal Med.','General Practice','ENT','Ophthalmology','Dermatology','Dental'];
+const CLF=['Internal Med.','General Practice','ENT','Ophthalmology','Dermatology','Dental'];
+const PH=['Dr A','Dr B','Dr C','Dr D','Dr E','Dr F'];
+const CAP=[24,40,20,20,20,16], MORN=[22,36,18,12,20,9];
+const NOW=10*60+36;
+const fmt=m=>String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+const toMin=s=>{const[a,b]=s.split(':');return +a*60+ +b};
+let seed=20261112;const rnd=()=>(seed=(seed*1664525+1013904223)>>>0)/4294967296;
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const rep=(v,n)=>Array(n).fill(v);
+const feat=[['10:40',412,4,'Approved','Insurer A','7731','Checked in'],['10:45',388,2,'Pending','Insurer B','1094','Confirmed'],['10:50',451,1,'N/A','Cash','—','Confirmed'],['11:00',297,3,'Rejected','Insurer C','5520','On hold'],['11:05',460,0,'Approved','Insurer A','8812','Confirmed'],['11:15',233,5,'Pending','Insurer D','3307','Confirmed']];
+let A=feat.map(f=>({t:toMin(f[0]),n:f[1],c:f[2],ins:f[3],insurer:f[4],mid:f[5],st:f[6]}));
+const insA=shuffle([...rep('Approved',86),...rep('Pending',7),...rep('Rejected',3),...rep('N/A',84)]);
+const stA=shuffle([...rep('Confirmed',147),...rep('Checked in',19),...rep('On hold',2),...rep('Cancelled',6),...rep('Rescheduled',6)]);
+const used=new Set(A.map(a=>a.n));
+for(let i=0;i<180;i++){let t=480+Math.floor(i*3.1);if(t>=636&&t<680)t+=45;let n;do{n=100+Math.floor(rnd()*880)}while(used.has(n));used.add(n);
+ const ins=insA[i];A.push({t,n,c:Math.floor(rnd()*6),ins,insurer:ins==='N/A'?'Cash':'Insurer '+'ABCD'[Math.floor(rnd()*4)],mid:ins==='N/A'?'—':String(1000+Math.floor(rnd()*9000)),st:stA[i]});}
+A.sort((a,b)=>a.t-b.t);
+const Q=[['A-014',1,'10:15',5],['A-015',2,'10:20',18],['A-016',0,'10:20',0],['A-017',1,'10:30',5],['A-018',4,'10:40',25],['A-019',5,'10:45',12],['A-020',3,'10:50',15],['A-021',1,'10:55',11],['A-022',2,'11:00',14],['A-023',0,'11:05',10]].map(q=>({id:q[0],c:q[1],slot:q[2],d:q[3]}));
+let ACT=[{t:'10:31',k:'Approved',s:'A-0412 · Insurer A · 38 s'},{t:'10:29',k:'Pending',s:'A-0388 · timeout after retry'},{t:'10:24',k:'Rejected',s:'A-0297 · policy expired'},{t:'10:20',k:'Approved',s:'A-0460 · Insurer A · 44 s'},{t:'10:12',k:'Manual',s:'A-0301 · portal ref. recorded'}];
+let NOTIF=[{t:'10:35',m:'Delay notice sent: A-015 ENT – Dr C (+18 min)',ch:'SMS',s:'Sent'},{t:'10:33',m:'Delay notice sent: A-018 Derm – Dr E (+25 min)',ch:'SMS',s:'Sent'},{t:'10:29',m:'Insurance timeout: A-0388 needs re-verify',ch:'Staff alert',s:'Open'},{t:'10:24',m:'Insurance rejected: A-0297 contact patient',ch:'Staff alert',s:'Open'},{t:'10:05',m:'Dermatology – Dr E is fully booked',ch:'Staff alert',s:'Read'}];
+const COLOR={Approved:'var(--green)',Pending:'var(--amber)',Rejected:'var(--red)',Manual:'var(--blue)'};
+const pc=s=>'p-'+s.replace('/','');
+const pill=s=>`<span class="pill ${pc(s)}">${s}</span>`;
+const SCREENS=[['overview','Overview'],['appointments','Appointments'],['queue','Waiting queue'],['insurance','Insurance checks'],['physicians','Physicians'],['notifications','Notifications'],['reports','Reports']];
+let cur='overview',limit=30;
+const $=id=>document.getElementById(id);
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2200)}
+// filters
+const fc=$('fClinic'),fp=$('fPhys'),fa=$('fAppt'),fi=$('fIns');
+fc.innerHTML='<option value="">Clinic: All</option>'+CL.map((c,i)=>`<option value="${i}">${c}</option>`).join('');
+fp.innerHTML='<option value="">Physician: All</option>'+PH.map((c,i)=>`<option value="${i}">${c}</option>`).join('');
+fa.innerHTML='<option value="">Appointment status: All</option>'+['Confirmed','Checked in','On hold','Cancelled','Rescheduled'].map(s=>`<option>${s}</option>`).join('');
+fi.innerHTML='<option value="">Insurance status: All</option>'+['Approved','Pending','Rejected','N/A'].map(s=>`<option>${s}</option>`).join('');
+[fc,fp,fa,fi].forEach(e=>e.onchange=()=>{limit=30;render()});
+function F(){return A.filter(a=>(!fc.value||a.c==fc.value)&&(!fp.value||a.c==fp.value)&&(!fa.value||a.st===fa.value)&&(!fi.value||a.ins===fi.value))}
+function FQ(){return Q.filter(q=>(!fc.value||q.c==fc.value)&&(!fp.value||q.c==fp.value))}
+const dl=d=>d===0?'<span class="dl-g">on time</span>':d<=5?`<span class="dl-b">+${d} min</span>`:d<=20?`<span class="dl-a">+${d} min</span>`:`<span class="dl-r">+${d} min</span>`;
+const short=c=>({0:'Int. Med',1:'GP',2:'ENT',3:'Ophth.',4:'Derm',5:'Dental'})[c]+' – '+PH[c];
+const full=c=>CL[c]+' – '+PH[c];
+const aid=a=>'A-'+String(a.n).padStart(4,'0');
+function action(a){
+ if(a.ins==='Pending')return `<a class="l" onclick="reverify(${a.n},this)">Re-verify</a> · <a class="l" onclick="manual(${a.n})">Manual entry</a>`;
+ if(a.ins==='Rejected')return `<a class="l" onclick="toast('Contacting patient ${String(a.n).padStart(4,'0')} …')">Contact</a>`;
+ return `<a class="l" onclick="detail(${a.n})">View</a>`;}
+function reverify(n,el){const a=A.find(x=>x.n===n);el.textContent='Verifying…';el.style.pointerEvents='none';
+ setTimeout(()=>{const ok=rnd()>.2;const s=Math.round(30+rnd()*25);a.ins=ok?'Approved':'Rejected';ACT.unshift({t:fmt(NOW),k:a.ins,s:`${aid(a)} · ${a.insurer} · ${s} s`});toast(`${aid(a)}: ${a.ins} (${s} s)`);render()},1200)}
+function manual(n){const a=A.find(x=>x.n===n);a.ins='Approved';a.manual=1;ACT.unshift({t:fmt(NOW),k:'Manual',s:`${aid(a)} · portal ref. recorded`});toast(aid(a)+': recorded manually, marked Approved');render()}
+function detail(n){const a=A.find(x=>x.n===n);modal(`<h3>Patient ${String(a.n).padStart(4,'0')}</h3><table><tr><td>Time</td><td><b>${fmt(a.t)}</b></td></tr><tr><td>Clinic / physician</td><td><b>${full(a.c)}</b></td></tr><tr><td>Insurer</td><td><b>${a.insurer}</b></td></tr><tr><td>Member ID</td><td><b>${a.mid==='—'?'—':'•••• '+a.mid}</b></td></tr><tr><td>Insurance</td><td>${pill(a.ins)}</td></tr><tr><td>Appointment</td><td><b>${a.st}</b></td></tr></table><div class="row"><button class="btn g" onclick="closeM()">Close</button></div>`)}
+function modal(h){closeM();const o=document.createElement('div');o.className='ov';o.id='ov';o.onclick=e=>{if(e.target===o)closeM()};o.innerHTML='<div class="modal">'+h+'</div>';document.body.appendChild(o)}
+function closeM(){const o=$('ov');if(o)o.remove()}
+function openBooking(){
+ const slots=[];for(let m=Math.ceil((NOW+1)/5)*5;m<=17*60+30;m+=5)slots.push(m);
+ modal(`<h3>New booking</h3><label>Patient name<input id="bN" placeholder="Patient name"></label><label>Clinic<select id="bC">${CL.map((c,i)=>`<option value="${i}">${c} – ${PH[i]}</option>`).join('')}</select></label><label>Time<select id="bT">${slots.map(m=>`<option value="${m}">${fmt(m)}</option>`).join('')}</select></label><label>Insurer<select id="bI"><option>Insurer A</option><option>Insurer B</option><option>Insurer C</option><option>Insurer D</option><option>Cash</option></select></label><label>Member ID (last 4 digits)<input id="bM" maxlength="4" placeholder="0000"></label><div class="row"><button class="btn g" onclick="closeM()">Cancel</button><button class="btn" onclick="book()">Confirm booking</button></div>`)}
+function book(){const nm=$('bN').value.trim();if(!nm){toast('Enter the patient name');return}
+ const ins=$('bI').value;let n;do{n=1000+Math.floor(rnd()*8999)}while(A.some(a=>a.n===n));
+ const a={t:+$('bT').value,n,c:+$('bC').value,ins:ins==='Cash'?'N/A':'Pending',insurer:ins,mid:ins==='Cash'?'—':($('bM').value||'0000'),st:'Confirmed',name:nm};
+ A.push(a);A.sort((x,y)=>x.t-y.t);closeM();toast(`Booked ${nm} at ${fmt(a.t)} – ${full(a.c)}`);go('appointments')}
+function notify(){const d=FQ().filter(q=>q.d>=10);if(!d.length){toast('No delayed patients');return}
+ d.forEach(q=>NOTIF.unshift({t:fmt(NOW),m:`Delay notice sent: ${q.id} ${short(q.c)} (+${q.d} min)`,ch:'SMS',s:'Sent'}));toast(`Notified ${d.length} delayed patient${d.length>1?'s':''}`);}
+function go(s){cur=s;history.replaceState(null,'','#'+s);limit=30;render()}
+// views
+function kpis(L){const q=FQ();const k=[["Today's appointments",L.length,'var(--blue)','appointments'],['Confirmed',L.filter(a=>a.st==='Confirmed').length,'var(--blue)','appointments'],['Pending insurance',L.filter(a=>a.ins==='Pending').length,'var(--amber)','insurance'],['Rejected insurance',L.filter(a=>a.ins==='Rejected').length,'var(--red)','insurance'],['Cancelled / rescheduled',L.filter(a=>a.st==='Cancelled'||a.st==='Rescheduled').length,'var(--gray)','appointments'],['Delayed now',q.filter(x=>x.d>=10).length,'var(--amber)','queue']];
+ return `<div class="kpis">${k.map(x=>`<div class="kpi" style="border-left-color:${x[2]}" onclick="go('${x[3]}')"><small>${x[0]}</small><b style="color:${x[2]}">${x[1]}</b></div>`).join('')}</div>`}
+function capRows(){const idx=[0,1,2,3,4,5].filter(i=>(!fc.value||fc.value==i)&&(!fp.value||fp.value==i));
+ return idx.map(i=>{const b=MORN[i]+A.filter(a=>a.c===i&&a.t<720&&a.n>=1000).length;const p=Math.min(1,b/CAP[i]);const col=p>=1?'var(--red)':p>=.9?'var(--amber)':'var(--blue)';return{i,b,p,col}})}
+function donut(L){const ins=L.filter(a=>a.ins!=='N/A');const c={Approved:0,Pending:0,Rejected:0};ins.forEach(a=>c[a.ins]++);const tot=ins.length||1;const R=70,C=2*Math.PI*R;let off=0;
+ const seg=Object.keys(c).map(k=>{const len=c[k]/tot*C;const s=`<circle r="${R}" cx="90" cy="90" fill="none" stroke="${COLOR[k]}" stroke-width="30" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 90 90)"/>`;off+=len;return s}).join('');
+ return `<div class="donutwrap"><svg width="180" height="180" viewBox="0 0 180 180">${seg}<text x="90" y="92" text-anchor="middle" font-size="26" font-weight="700">${ins.length}</text><text x="90" y="112" text-anchor="middle" font-size="13" fill="#6b7280">checks</text></svg><div class="leg"><div><i style="background:var(--green)"></i>Approved ${c.Approved}</div><div><i style="background:var(--amber)"></i>Pending ${c.Pending}</div><div><i style="background:var(--red)"></i>Rejected ${c.Rejected}</div></div></div><div class="note" style="margin-top:14px">Median response time: 41 s &nbsp;·&nbsp; Manual fallbacks: ${3+A.filter(a=>a.manual).length}</div>`}
+function apptTable(rows){return `<table><thead><tr><th>Time</th><th>Patient</th><th>Clinic / physician</th><th>Insurer</th><th>Member ID</th><th>Insurance</th><th>Appointment</th><th>Action</th></tr></thead><tbody>${rows.map(a=>`<tr><td>${fmt(a.t)}</td><td>${a.name||'Patient '+String(a.n).padStart(4,'0')}</td><td>${full(a.c)}</td><td>${a.insurer}</td><td>${a.mid==='—'?'—':'•••• '+a.mid}</td><td>${pill(a.ins)}</td><td>${a.st}</td><td>${action(a)}</td></tr>`).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--mut);padding:24px">No appointments match the filters</td></tr>'}</tbody></table>`}
+function queueTable(q){return `<table><thead><tr><th>No.</th><th>Clinic</th><th>Slot</th><th>Delay</th></tr></thead><tbody>${q.map(x=>`<tr><td>${x.id}</td><td>${short(x.c)}</td><td>${x.slot}</td><td>${dl(x.d)}</td></tr>`).join('')||'<tr><td colspan="4" style="color:var(--mut);padding:18px">Queue is empty</td></tr>'}</tbody></table>`}
+const V={
+overview(){const L=F();const up=L.filter(a=>a.t>=NOW).slice(0,6);const cr=capRows();
+ return kpis(L)+`<div class="grid g1"><div class="card"><h3>Physician capacity and utilisation (morning session)</h3>${cr.map(r=>`<div class="cap"><span>${CL[r.i]} – ${PH[r.i]}</span><div class="bar"><i style="width:${r.p*100}%;background:${r.col}"></i></div><span>${r.b}/${CAP[r.i]}</span></div>`).join('')}<div class="note">Bar colour: blue &lt; 90%, amber ≥ 90%, red = full (no extra walk-ins without override)</div></div>
+ <div class="card"><h3>Current waiting queue</h3>${queueTable(FQ().slice(0,5))}<button class="btn o" style="margin-top:10px" onclick="notify();render()">Notify delayed patients</button></div>
+ <div class="card"><h3>Insurance verification today</h3>${donut(L)}</div></div>
+ <div class="grid g2"><div class="card"><h3>Upcoming appointments</h3>${apptTable(up)}</div><div class="card"><h3>Recent insurance verification activity</h3>${ACT.slice(0,5).map(a=>`<div class="act"><span class="d" style="background:${COLOR[a.k]}"></span><div><b style="color:${COLOR[a.k]}">${a.t} ${a.k}</b><small>${a.s}</small></div></div>`).join('')}</div></div>`},
+appointments(){const L=F();return `<div class="pg"><h2>Appointments</h2><p>${L.length} appointments · 12 Nov 2026</p></div><div class="card">${apptTable(L.slice(0,limit))}${L.length>limit?`<div style="text-align:center;margin-top:12px"><button class="btn o" onclick="limit+=30;render()">Show more (${L.length-limit} left)</button></div>`:''}</div>`},
+queue(){const q=FQ();return `<div class="pg"><h2>Waiting queue</h2><p>${q.filter(x=>x.d>=10).length} delayed of ${q.length} waiting</p></div><div class="card">${queueTable(q)}<button class="btn o" style="margin-top:12px" onclick="notify();render()">Notify delayed patients</button></div>`},
+insurance(){const L=F().filter(a=>a.ins!=='N/A');return `<div class="pg"><h2>Insurance checks</h2><p>${L.length} checks · simulated NPHIES-style responses</p></div><div class="card"><table><thead><tr><th>Time</th><th>Appointment</th><th>Insurer</th><th>Result</th><th>Action</th></tr></thead><tbody>${L.slice(0,limit).map(a=>`<tr><td>${fmt(a.t)}</td><td>${aid(a)}</td><td>${a.insurer}</td><td>${pill(a.ins)}</td><td>${action(a)}</td></tr>`).join('')}</tbody></table>${L.length>limit?`<div style="text-align:center;margin-top:12px"><button class="btn o" onclick="limit+=30;render()">Show more</button></div>`:''}</div>`},
+physicians(){const cr=capRows();return `<div class="pg"><h2>Physicians</h2><p>Morning session capacity</p></div><div class="card"><table><thead><tr><th>Physician</th><th>Clinic</th><th>Booked</th><th style="width:40%">Utilisation</th></tr></thead><tbody>${cr.map(r=>`<tr><td>${PH[r.i]}</td><td>${CL[r.i]}</td><td>${r.b}/${CAP[r.i]}</td><td><div class="bar"><i style="width:${r.p*100}%;background:${r.col}"></i></div></td></tr>`).join('')}</tbody></table></div>`},
+notifications(){return `<div class="pg"><h2>Notifications</h2><p>${NOTIF.length} recent alerts</p></div><div class="card"><table><thead><tr><th>Time</th><th>Message</th><th>Channel</th><th>Status</th></tr></thead><tbody>${NOTIF.map(n=>`<tr><td>${n.t}</td><td>${n.m}</td><td>${n.ch}</td><td>${n.s}</td></tr>`).join('')}</tbody></table></div>`},
+reports(){const L=F();const ins=L.filter(a=>a.ins!=='N/A');const ap=ins.filter(a=>a.ins==='Approved').length;const hrs=[8,9,10,11,12,13,14,15,16,17].map(h=>({h,n:L.filter(a=>Math.floor(a.t/60)===h).length}));const mx=Math.max(1,...hrs.map(x=>x.n));
+ return `<div class="pg"><h2>Reports</h2><p>Summary of the current filter selection</p></div><div class="stat4">${[['Appointments',L.length,'var(--blue)'],['Insurance approval rate',ins.length?Math.round(ap/ins.length*100)+'%':'—','var(--green)'],['Avg. response time','41 s','var(--amber)'],['Cancelled / rescheduled',L.filter(a=>a.st==='Cancelled'||a.st==='Rescheduled').length,'var(--gray)']].map(x=>`<div class="kpi" style="border-left-color:${x[2]};cursor:default"><small>${x[0]}</small><b style="color:${x[2]}">${x[1]}</b></div>`).join('')}</div><div class="card"><h3>Appointments per hour</h3><div class="cols">${hrs.map(x=>`<div>${x.n}<i style="height:${x.n/mx*170}px"></i>${String(x.h).padStart(2,'0')}:00</div>`).join('')}</div></div>`}
+};
+function render(){$('nav').innerHTML=SCREENS.map(s=>`<a class="${s[0]===cur?'on':''}" onclick="go('${s[0]}')">${s[1]}</a>`).join('');$('view').innerHTML=V[cur]()}
+const h=location.hash.slice(1);if(V[h])cur=h;
+window.addEventListener('hashchange',()=>{const x=location.hash.slice(1);if(V[x]&&x!==cur){cur=x;render()}});
+render();
+</script>
+</body>
+</html>
